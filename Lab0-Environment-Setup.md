@@ -1,8 +1,5 @@
 # Lab 0: Environment Setup Report
 
-<img width="712" height="446" alt="Screenshot 2026-07-29 161723" src="https://github.com/user-attachments/assets/ba334f09-2150-4e95-88fc-dcc0adf9e42d" />
-
-
 ## Course Information
 
 - Course: IKB42603 Cloud Computing Security Essentials
