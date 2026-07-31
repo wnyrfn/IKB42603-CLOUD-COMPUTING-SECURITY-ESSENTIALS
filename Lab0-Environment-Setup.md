@@ -149,6 +149,9 @@ Evidence:
 
 <img width="477" height="268" alt="5 localstack" src="https://github.com/user-attachments/assets/4d9d052d-d15d-476d-b351-e33946c68878" />
 
+<img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/dff574a0-cdce-4cec-966f-2c2ffaf3fcb4" />
+
+
 ### 6. Create and Verify the Kubernetes Cluster
 
 Purpose:
