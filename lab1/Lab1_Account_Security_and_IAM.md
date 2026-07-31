@@ -81,7 +81,7 @@ The `Admins` group was created successfully. The returned ARN was `arn:aws:iam::
 
 Evidence:
 
-![Admins group creation](2.1createGroup.png)
+![Admins group creation](lab1/Evidence/2.1createGroup.png)
 
 ### Step 2.2: Attach Administrator Policy to Group
 
@@ -127,7 +127,7 @@ The personal administrator user `CloudAdmin_Wan` was created successfully.
 
 Evidence:
 
-![CloudAdmin_Wan user creation](2.2createUserAdmin.png)
+![CloudAdmin_Wan user creation](lab1/Evidence/2.2createUserAdmin.png)
 
 ### Step 2.4: Add User to Admins Group and Verify Membership
 
@@ -150,7 +150,7 @@ The group output lists `CloudAdmin_Wan` with ARN `arn:aws:iam::000000000000:user
 
 Evidence:
 
-![Verify Admins membership](2.3.verifyMembership.png)
+![Verify Admins membership](lab1/Evidence/2.3.verifyMembership.png)
 
 ## Task 3: Enforce Least Privilege with a Scoped Policy
 
@@ -168,7 +168,7 @@ The user `Analyst_Syed` was created successfully.
 
 Evidence:
 
-![Analyst_Syed user creation](3.1createUserRead.png)
+![Analyst_Syed user creation](lab1/Evidence/3.1createUserRead.png)
 
 ### Step 3.2: Attach S3 Read-Only Policy
 
@@ -193,7 +193,7 @@ The output lists only `AmazonS3ReadOnlyAccess` with policy ARN `arn:aws:iam::aws
 
 Evidence:
 
-![Analyst read-only policy verification](3.2verifyPolicyUserRead.png)
+![Analyst read-only policy verification](lab1/Evidence/3.2verifyPolicyUserRead.png)
 
 ### Least Privilege Explanation
 
@@ -217,7 +217,7 @@ An access key was created for `Analyst_Syed` with status `Active`.
 
 Evidence:
 
-![Redacted access key creation](4.1createAccessKey-redacted.png)
+![Redacted access key creation](lab1/Evidence/4.1createAccessKey-redacted.png)
 
 Security note: The generated screenshot contains a secret access key. Secret access keys must be treated as credentials: they must not be committed to repositories, shared publicly, or stored in plaintext. The value is intentionally not reproduced in this report text.
 
@@ -235,7 +235,7 @@ The access-key metadata shows one key for `Analyst_Syed` and confirms that its s
 
 Evidence:
 
-![Access key listing](4.2listAccessKey.png)
+![Access key listing](lab1/Evidence/4.2listAccessKey.png)
 
 ### Step 4.3: Rotate and Deactivate Old Key
 
@@ -252,7 +252,7 @@ The old access key was deactivated by setting its status to `Inactive`. This dem
 
 Evidence:
 
-![Access key deactivation command](<4.3rotateDeactivateOld Key.png>)
+![Access key deactivation command](<lab1/Evidence/4.3rotateDeactivateOld Key.png>)
 
 ## Short-Answer Questions
 
