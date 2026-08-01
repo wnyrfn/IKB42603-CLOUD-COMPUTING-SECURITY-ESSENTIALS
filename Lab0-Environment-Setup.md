@@ -132,7 +132,7 @@ LocalStack simulates AWS services locally so that lab exercises can be tested wi
 
 Commands used:
 ```bash
-docker run -d --name localstack -p 4566:4566 -p 4510-4559:4510-4559 localstack/localstack:3.0
+sudo docker run --rm -p 4566:4566 localstack/localstack:3.0
 curl http://localhost:4566/_localstack/health
 docker ps
 ```
