@@ -2,38 +2,46 @@
 
 **Course:** IKB42603 Cloud Computing Security Essentials  
 **Lab:** Lab 1  
-**Topic:** Identity governance, least privilege and LocalStack IAM  
-**Environment:** LocalStack on `localhost:4566`  
+**Topic:** Identity governance, least privilege, LocalStack IAM and Kubernetes RBAC  
+**Environment:** LocalStack on `localhost:4566` and kind Kubernetes cluster `ccse-lab1`  
 **Name:** WAN MUHAMMAD IRFAN BIN MOHD ISA
 
 ## Lab Summary // Objective
 
-This Session A lab demonstrated cloud account security using LocalStack IAM. It covered the creation of an administrator group and personal administrator account, the assignment of a scoped read-only policy to an analyst account, and access-key hygiene through key creation, listing, and deactivation.
+This lab demonstrated account security and access control using two local platforms:
+
+- **LocalStack IAM** was used to simulate AWS IAM users, groups, policies and access keys.
+- **Kubernetes RBAC** was used to enforce authorization decisions through namespaced Roles and RoleBindings.
 
 ## Evidence Folder
 
-All screenshots used for this report are stored alongside this Markdown file.
+All screenshots used for this report are stored in the `Evidence` and `Evidence part b` folders.
 
 | Evidence File | Purpose |
 |---|---|
-| `2.1createGroup.png` | Creation of the `Admins` IAM group |
-| `2.2createUserAdmin.png` | Creation of the `CloudAdmin_Wan` administrator user |
-| `2.3.verifyMembership.png` | Verification that `CloudAdmin_Wan` belongs to `Admins` |
-| `3.1createUserRead.png` | Creation of the `Analyst_Syed` analyst user |
-| `3.2verifyPolicyUserRead.png` | Verification of `AmazonS3ReadOnlyAccess` for `Analyst_Syed` |
-| `4.1createAccessKey-redacted.png` | Redacted access-key creation evidence for `Analyst_Syed` |
-| `4.2listAccessKey.png` | Access-key metadata listing for `Analyst_Syed` |
-| `4.3rotateDeactivateOld Key.png` | Access-key deactivation command |
+| `Evidence/2.1createGroup.png` | Creation of the `Admins` IAM group |
+| `Evidence/2.2createUserAdmin.png` | Creation of the `CloudAdmin_Wan` administrator user |
+| `Evidence/2.3.verifyMembership.png` | Verification that `CloudAdmin_Wan` belongs to `Admins` |
+| `Evidence/3.1createUserRead.png` | Creation of the `Analyst_Syed` analyst user |
+| `Evidence/3.2verifyPolicyUserRead.png` | Verification of `AmazonS3ReadOnlyAccess` for `Analyst_Syed` |
+| `Evidence/4.1createAccessKey-redacted.png` | Redacted access-key creation evidence for `Analyst_Syed` |
+| `Evidence/4.2listAccessKey.png` | Access-key metadata listing for `Analyst_Syed` |
+| `Evidence/4.3rotateDeactivateOld Key.png` | Access-key deactivation command |
+| `Evidence part b/setupKubernetusCluster.png` | Kubernetes cluster and node verification |
+| `Evidence part b/5.0listNamespace.png` | `dev` and `prod` namespace verification |
+| `Evidence part b/6.0roleBind.png` | Service account, Role and RoleBinding creation |
+| `Evidence part b/7.0test.png` | RBAC authorization tests |
+| `Evidence part b/Verification.png` | RoleBinding YAML verification |
 
 ## Task 1: Map the Cloud Identity Landscape
 
 | Concept | AWS Term | Purpose |
 |---|---|---|
-| All-powerful owner | Root user | The original account owner with full control over resources and billing. It should be protected and not used for daily administration. |
-| Human/app identity | IAM User | A named identity for a person, application, or service that needs credentials to access cloud resources. |
-| Permission bundle | IAM Policy | A JSON permission document that defines which actions are allowed or denied on specified resources. |
-| Collection of users | IAM Group | A mechanism for managing permissions for multiple users by attaching policies to the group. |
-| Temporary identity | IAM Role | An identity that can be assumed temporarily to provide short-lived permissions without long-term user credentials. |
+| All-powerful owner | Root user | Gives full, unrestricted administrative access to the entire AWS account, billing, initial setup tasks. |
+| Human/app identity | IAM User | A person or application that needs long-term access credentials to interact with AWS services. |
+| Permission bundle | IAM Policy | Specifies specific permissions (allowed or denied actions and resources) in a JSON document attached to identities. |
+| Collection of users | IAM Group | simplifies management by allowing you to assign permissions (policies) to multiple users at once. |
+| Temporary identity | IAM Role | Provides temporary access rights for users, apps or external services without requiring permanent credentials.|
 
 ## Session A: LocalStack IAM
 
@@ -254,28 +262,204 @@ Evidence:
 
 ![Access key deactivation command](<Evidence/4.3rotateDeactivateOld Key.png>)
 
+## Session B: Kubernetes RBAC
+
+### Setup: Create Local Kubernetes Cluster
+
+Commands:
+
+```bash
+kind create cluster --name ccse-lab1
+kubectl cluster-info --context kind-ccse-lab1
+kubectl get nodes
+```
+
+Result:
+
+The local kind cluster `ccse-lab1` was available and the control-plane node was in the `Ready` state. The evidence shows Kubernetes running locally at `127.0.0.1:46533` and the node using Kubernetes version `v1.30.0`.
+
+Evidence:
+
+![Kubernetes cluster and node verification](<Evidence part b/setupKubernetusCluster.png>)
+
+## Task 5: Separate Environments with Namespaces
+
+Commands:
+
+```bash
+kubectl create namespace dev
+kubectl create namespace prod
+kubectl get namespaces
+```
+
+Result:
+
+The `dev` and `prod` namespaces were created and both are shown as `Active`. These namespaces establish separate logical environments for access-control testing.
+
+Evidence:
+
+![Namespace verification](<Evidence part b/5.0listNamespace.png>)
+
+## Task 6: Define a Role and Bind It
+
+### Step 6.1: Create Service Account
+
+Command:
+
+```bash
+kubectl create serviceaccount dev-user -n dev
+```
+
+Result:
+
+The service account `dev-user` was created in the `dev` namespace.
+
+### Step 6.2: Create Pod Reader Role
+
+Command:
+
+```bash
+kubectl create role pod-reader -n dev \
+  --verb=get,list,watch --resource=pods
+```
+
+Result:
+
+The Role `pod-reader` was created in the `dev` namespace. It permits only the `get`, `list`, and `watch` verbs for pod resources.
+
+Note: The evidence records an initial `reate` command typo. The following corrected `kubectl create role` command completed successfully and created the Role.
+
+### Step 6.3: Create RoleBinding
+
+Command:
+
+```bash
+kubectl create rolebinding dev-user-binding -n dev \
+  --role=pod-reader --serviceaccount=dev:dev-user
+```
+
+Result:
+
+The RoleBinding `dev-user-binding` binds the `pod-reader` Role to the `dev-user` service account in the `dev` namespace.
+
+Evidence:
+
+![Service account, Role and RoleBinding creation](<Evidence part b/6.0roleBind.png>)
+
+## Task 7: Test Access Control
+
+The Kubernetes service-account identity was stored in a shell variable:
+
+```bash
+SA=system:serviceaccount:dev:dev-user
+```
+
+This represents the `dev-user` service account in the `dev` namespace.
+
+### Test 1: List Pods in Dev
+
+Command:
+
+```bash
+kubectl auth can-i list pods -n dev --as=$SA
+```
+
+Result:
+
+```text
+yes
+```
+
+The request is allowed because the `pod-reader` Role grants the `list` verb on pods in the `dev` namespace.
+
+### Test 2: Delete Pods in Dev
+
+Command:
+
+```bash
+kubectl auth can-i delete pods -n dev --as=$SA
+```
+
+Result:
+
+```text
+no
+```
+
+The request is denied because the Role grants only `get`, `list`, and `watch`; it does not grant `delete`.
+
+### Test 3: List Pods in Prod
+
+Command:
+
+```bash
+kubectl auth can-i list pods -n prod --as=$SA
+```
+
+Result:
+
+```text
+no
+```
+
+The request is denied because the Role and RoleBinding are limited to the `dev` namespace. No permission was granted to this service account in `prod`.
+
+Evidence:
+
+![RBAC authorization tests](<Evidence part b/7.0test.png>)
+
+### Authentication vs Authorization
+
+Kubernetes recognises the identity `system:serviceaccount:dev:dev-user` during authentication. It then applies authorization rules to the requested action. The identity can list pods in `dev` because the RoleBinding grants that specific permission, but it cannot delete pods or access pods in `prod` because neither action was granted.
+
+## RBAC Verification Command
+
+Command:
+
+```bash
+kubectl get rolebinding dev-user-binding -n dev -o yaml
+```
+
+Result:
+
+The YAML output confirms that `dev-user-binding` is a `RoleBinding` in the `dev` namespace. Its `roleRef` points to the `pod-reader` Role, and its subject is the `dev-user` ServiceAccount in `dev`.
+
+Evidence:
+
+![RoleBinding YAML verification](<Evidence part b/Verification.png>)
+
 ## Short-Answer Questions
 
 ### Q1. Why is attaching policies to groups better than attaching them directly to users?
 
-Attaching policies to groups centralises permission management. A policy can be attached or updated once for the group, and all members inherit the change. This makes access reviews easier and reduces errors that occur when individual user permissions are managed separately.
+With policies on groups you can centralise management of permissions. A policy is applied or changed once for the group and all members inherit the change. This simplifies access reviews and reduces errors when individual user permissions are handled separately.
 
 ### Q2. What is the difference between an IAM User and an IAM Role?
 
-An IAM User is a long-term identity for a person or application and can have long-lived credentials, such as access keys. An IAM Role is an assumable identity that provides temporary credentials. Roles are generally preferred for workloads because they reduce reliance on permanent credentials.
+An IAM User is a long-term identity that represents a person or application that can have long-lived credentials, such as access keys. IAM Role An identity that can be assumed and provides temporary credentials. Roles are often preferred by workloads since they eliminate the need for long-lived credentials.
 
 ### Q3. Explain least privilege using the Analyst account, and how it reduces blast radius if compromised.
 
-`Analyst_Syed` demonstrates least privilege because it was assigned `AmazonS3ReadOnlyAccess` instead of administrative access. If compromised, the attacker would be constrained to the limited read-only permissions granted by that policy. They would not receive administrator capabilities through this account, which limits the potential impact or blast radius.
+`Analyst_Syed` is an example of least privilege as it is granted `AmazonS3ReadOnlyAccess` instead of admin access. 2. If compromised, the attacker would be restricted to the limited read permissions granted by that policy . This account would not grant them administrator capabilities, which limits the possible effect or blast radius.
+
+### Q4. In Kubernetes, what is the difference between a Role and a RoleBinding?
+
+A Role defines the actions that are permitted on resources within a namespace. A RoleBinding provides that Role to one or more subjects. In this lab pod-reader specifies the allowed pod actions and dev-user-binding assigns those permissions to the dev-user service account.
+
+### Q5. Why did the developer service account fail to access prod, and which security principle does that demonstrate?
+
+The service account was unable to access `prod` as its Role and RoleBinding exist only in the `dev` namespace. It was not assigned any permissions in `production`. This is an example of least privilege and separation of environments where there is only access to the namespace and actions that are needed.
 
 ## Security Best-Practices Checklist
 
-- [x] A dedicated administrator identity, `CloudAdmin_Wan`, was created instead of using the root identity for routine administration.
-- [x] Administrator permissions are managed through the `Admins` group rather than being attached directly to the administrator user.
-- [x] A scoped analyst identity, `Analyst_Syed`, was created and assigned `AmazonS3ReadOnlyAccess`.
-- [x] Access keys were created, listed, and deactivated to demonstrate credential hygiene and rotation.
-- [x] Secret access-key material is not repeated in the report text.
+- [x] Root user is not used for daily tasks (a dedicated admin identity exists).
+- [x] Permissions are granted via groups/roles, not directly to individual users.
+- [x] At least one least-privilege (read-only) identity was created and tested.
+- [x] Access keys were listed and a rotation (deactivate) was demonstrated.
+- [x] Kubernetes RBAC blocks an unauthorised action (delete / cross-namespace).
 
 ## Conclusion
 
-Session A successfully demonstrated core IAM account-security practices in LocalStack. Administrative access was assigned through the `Admins` group and inherited by `CloudAdmin_Wan`, while `Analyst_Syed` was limited to Amazon S3 read-only access to demonstrate least privilege. The lab also demonstrated the access-key lifecycle by creating, listing, and deactivating an analyst access key. Together, these controls reduce unnecessary permissions and limit the impact of credential compromise.
+This lab successfully demonstrated cloud identity management and least privilege in LocalStack IAM and Kubernetes. Administrative permissions were assigned through the `Admins` group, while `Analyst_Syed` was limited to Amazon S3 read-only access. The access-key lifecycle was also demonstrated through key creation, listing, and deactivation.
+
+In Kubernetes, RBAC enforced a clear access boundary. The `dev-user` service account could list pods in `dev`, but could not delete pods and could not list pods in `prod`. These results demonstrate that authorization was enforced according to least privilege and namespace separation.
