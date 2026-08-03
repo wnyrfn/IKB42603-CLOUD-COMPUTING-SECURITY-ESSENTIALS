@@ -280,7 +280,7 @@ The local kind cluster `ccse-lab1` was available and the control-plane node was 
 
 Evidence:
 
-![Kubernetes cluster and node verification](<Evidence part b/setupKubernetusCluster.png>)
+![Kubernetes cluster and node verification](<Evidence/setupKubernetusCluster.png>)
 
 ## Task 5: Separate Environments with Namespaces
 
@@ -298,7 +298,7 @@ The `dev` and `prod` namespaces were created and both are shown as `Active`. The
 
 Evidence:
 
-![Namespace verification](<Evidence part b/5.0listNamespace.png>)
+![Namespace verification](<<Evidence/5.0listNamespace.png>)
 
 ## Task 6: Define a Role and Bind It
 
@@ -344,7 +344,7 @@ The RoleBinding `dev-user-binding` binds the `pod-reader` Role to the `dev-user`
 
 Evidence:
 
-![Service account, Role and RoleBinding creation](<Evidence part b/6.0roleBind.png>)
+![Service account, Role and RoleBinding creation](<Evidence/6.0roleBind.png>)
 
 ## Task 7: Test Access Control
 
@@ -406,7 +406,7 @@ The request is denied because the Role and RoleBinding are limited to the `dev` 
 
 Evidence:
 
-![RBAC authorization tests](<Evidence part b/7.0test.png>)
+![RBAC authorization tests](<Evidence/7.0test.png>)
 
 ### Authentication vs Authorization
 
@@ -426,7 +426,7 @@ The YAML output confirms that `dev-user-binding` is a `RoleBinding` in the `dev`
 
 Evidence:
 
-![RoleBinding YAML verification](<Evidence part b/Verification.png>)
+![RoleBinding YAML verification](<Evidence/Verification.png>)
 
 ## Short-Answer Questions
 
