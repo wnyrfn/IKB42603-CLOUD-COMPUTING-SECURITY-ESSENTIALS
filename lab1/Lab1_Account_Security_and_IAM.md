@@ -27,11 +27,11 @@ All screenshots used for this report are stored in the `Evidence` and `Evidence 
 | `Evidence/4.1createAccessKey-redacted.png` | Redacted access-key creation evidence for `Analyst_Syed` |
 | `Evidence/4.2listAccessKey.png` | Access-key metadata listing for `Analyst_Syed` |
 | `Evidence/4.3rotateDeactivateOld Key.png` | Access-key deactivation command |
-| `Evidence part b/setupKubernetusCluster.png` | Kubernetes cluster and node verification |
-| `Evidence part b/5.0listNamespace.png` | `dev` and `prod` namespace verification |
-| `Evidence part b/6.0roleBind.png` | Service account, Role and RoleBinding creation |
-| `Evidence part b/7.0test.png` | RBAC authorization tests |
-| `Evidence part b/Verification.png` | RoleBinding YAML verification |
+| `Evidence/setupKubernetusCluster.png` | Kubernetes cluster and node verification |
+| `Evidence/5.0listNamespace.png` | `dev` and `prod` namespace verification |
+| `Evidence/6.0roleBind.png` | Service account, Role and RoleBinding creation |
+| `Evidence/7.0test.png` | RBAC authorization tests |
+| `Evidence/Verification.png` | RoleBinding YAML verification |
 
 ## Task 1: Map the Cloud Identity Landscape
 
