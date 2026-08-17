@@ -52,6 +52,12 @@ The cluster and Calico resources were created. However, the captured rollout sta
 
 Evidence: [cluster creation](Evidence/setup1.png), [Calico installation](Evidence/setup2.png), [Calico rollout result](Evidence/setup3.png).
 
+![Figure 1 — Kind cluster creation](Evidence/setup1.png)
+
+![Figure 2 — Calico installation](Evidence/setup2.png)
+
+![Figure 3 — Calico rollout status](Evidence/setup3.png)
+
 ### 4.2 Task 1 — Two tenants on one cluster
 
 Two namespaces were created to represent independent tenants. An NGINX deployment and a ClusterIP service were then created in `tenant-a`.
@@ -70,6 +76,8 @@ The evidence shows `tenant-a` and `tenant-b` were created, an NGINX deployment a
 
 Evidence: [Task 1 — two tenants on one cluster](Evidence/Task1-TwoTenantsOnOneCluster.png).
 
+![Figure 4 — Task 1: Two tenants on one cluster](Evidence/Task1-TwoTenantsOnOneCluster.png)
+
 ### 4.3 Task 2 — Default open-network risk
 
 The service IP was retrieved from `tenant-b`, and a temporary curl pod in `tenant-a` sent an HTTP request to it:
@@ -85,6 +93,8 @@ kubectl -n tenant-a run probe --rm -it --image=curlimages/curl --restart=Never -
 The returned status was `HTTP 403`. Although the application denied the request, receiving an HTTP response demonstrates that the cross-namespace request reached an HTTP endpoint. Without a NetworkPolicy, namespace membership alone does not provide network isolation.
 
 Evidence: [Task 2 — default open risk](Evidence/Task2-ObserveTheDefaultOpenRisk.png).
+
+![Figure 5 — Task 2: Default open-network risk](Evidence/Task2-ObserveTheDefaultOpenRisk.png)
 
 ### 4.4 Task 3 — Contain the noisy neighbour
 
@@ -108,6 +118,8 @@ spec:
 The quota was created successfully. This constrains scheduling reservations and pod count for `tenant-a`, reducing the risk that an uncontrolled workload monopolises shared-cluster capacity. A practical consequence is that pods in this namespace must specify CPU and memory requests.
 
 Evidence: [Task 3 — ResourceQuota](Evidence/Task3-ContainTheNoisyNeighbour.png).
+
+![Figure 6 — Task 3: ResourceQuota for tenant-a](Evidence/Task3-ContainTheNoisyNeighbour.png)
 
 ### 4.5 Task 4 — Default-deny network isolation
 
@@ -153,6 +165,8 @@ Expected secure outcome: the request times out or is refused by policy, rather t
 
 Evidence: [Task 4 — default-deny policy and blocked probe](Evidence/Task4-DefaultDenyNetworkIsolation.png).
 
+![Figure 7 — Task 4: Default-deny NetworkPolicy](Evidence/Task4-DefaultDenyNetworkIsolation.png)
+
 ### 4.6 Task 5 — Storage and secret isolation
 
 Distinct secrets were created in each namespace. A service account in `tenant-a` was bound to a namespaced `reader` Role that permits `get` on `secrets` only in `tenant-a`.
@@ -175,6 +189,8 @@ Authorisation checks returned `yes` for `tenant-a` and `no` for `tenant-b`. This
 
 Evidence: [Task 5 — secret and RBAC isolation](Evidence/Task5-Storage&SecretIsolation.png).
 
+![Figure 8 — Task 5: Secret and RBAC isolation](Evidence/Task5-Storage&SecretIsolation.png)
+
 ### 4.7 Task 6 — Data remanence and secure deletion
 
 A Docker volume was used to represent persistent data. A sensitive record was written, verified with `grep`, then overwritten with zero bytes before deletion.
@@ -189,6 +205,8 @@ docker run --rm -v ccse-vol:/data alpine sh -c 'echo SENSITIVE > /data/phi2.txt;
 The evidence records the overwrite operation completing (`1024 bytes copied`) and the final `wiped` status. Secure deletion reduces recoverable plaintext remnants, but on copy-on-write filesystems, SSDs, snapshots, backups, and cloud-managed storage, overwrite alone cannot guarantee physical erasure. Encryption at rest with prompt key destruction is the stronger cloud-storage control.
 
 Evidence: [Task 6 — data remanence and secure deletion](Evidence/Task6-DataRemanence&SecureDeletion.png).
+
+![Figure 9 — Task 6: Data remanence and secure deletion](Evidence/Task6-DataRemanence&SecureDeletion.png)
 
 ## 5. Security analysis
 
